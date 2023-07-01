@@ -14,41 +14,55 @@ export class App extends Component {
     name: '',
     img: [],
     page: 1,
+    tags: '',
     totalPages: 0,
     isLoading: false,
     error: null,
     modal: { isOpen: false, imgModal: null, tags: '' },
   };
 
-  onSubmit = img => {
-    this.setState(() => ({ name: img }));
-  };
-
   componentDidUpdate(prevProps, prevState) {
     const { name, page } = this.state;
-    console.log('name: ', name);
-    console.log('prevState: ', prevState.name);
-
     if (prevState.name !== name || prevState.page !== page) {
-      this.setState({ isLoading: true });
-
-      Api.images(name, page)
-        .then(images => {
-          this.setState(prevState => ({
-            img:
-              prevState.name !== name
-                ? images.hits
-                : [...prevState.img, ...images.hits],
-            totalPages: Math.floor(images.totalHits / 12),
-            isLoading: false,
-          }));
-        })
-        .catch(error => this.setState({ error: error.message }));
+      this.fetchImages();
     }
   }
 
+  fetchImages = async () => {
+    const { name, page } = this.state;
+
+    this.setState({ isLoading: true });
+    await Api.images(name, page)
+      .then(images => {
+        if (images.hits.length === 0) {
+          alert(
+            `Oops😳...Your ${name} was not found. You need to make a new request🥰`
+          );
+        }
+        this.setState(prevState => ({
+          img: page === 1 ? images.hits : [...prevState.img, ...images.hits],
+          totalPages: Math.floor(images.totalHits / 12),
+          isLoading: false,
+        }));
+      })
+      .catch(error => this.setState({ error: error.message }));
+  };
+
+  onSubmit = name => {
+    this.setState({ name, page: 1 }, () => {
+      this.scrollToTop();
+    });
+  };
+
+  scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  };
+
   onClickModalOpen = (img, tags) => {
-    this.setState({ modal: { isOpen: true, imgModal: img, tags: tags } });
+    this.setState({ modal: { isOpen: true, imgModal: img, tags } });
   };
 
   onClickModalCloys = () => {
@@ -60,19 +74,23 @@ export class App extends Component {
   };
 
   render() {
-    const { img, page, modal, isLoading, error } = this.state;
+    const { img, page, modal, isLoading, error, totalPages } = this.state;
     return (
       <div className={css.app}>
         <SearchBar onSubmit={this.onSubmit} />
-        {this.state.img.length === 0 && (
+        {img.length === 0 && (
           <h1 className={css.title}>
             Your pictures will be here if you enter the data in the form 🥰
           </h1>
         )}
-        {this.state.modal.isOpen && (
-          <Modal onCloys={this.onClickModalCloys} imgModal={modal.imgModal} />
+        {modal.isOpen && (
+          <Modal
+            onCloys={this.onClickModalCloys}
+            imgModal={modal.imgModal}
+            modalTags={modal.tags}
+          />
         )}
-        {this.state.error && (
+        {error && (
           <p className={css.title}>
             Oops, some error. Please, try again later. Error: {error}
           </p>
@@ -81,7 +99,7 @@ export class App extends Component {
         <Button
           onClick={this.clickBtn}
           img={img}
-          totalPages={this.state.totalPages}
+          totalPages={totalPages}
           page={page}
         />
         <Loader isLoading={isLoading} />

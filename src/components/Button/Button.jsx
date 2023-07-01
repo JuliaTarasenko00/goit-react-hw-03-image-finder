@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import css from './Button.module.css';
 
 export const Button = ({ img, onClick, page, totalPages }) => {
@@ -10,4 +11,11 @@ export const Button = ({ img, onClick, page, totalPages }) => {
       )}
     </>
   );
+};
+
+Button.propTypes = {
+  img: PropTypes.arrayOf(PropTypes.object).isRequired,
+  onClick: PropTypes.func.isRequired,
+  page: PropTypes.number.isRequired,
+  totalPages: PropTypes.number.isRequired,
 };

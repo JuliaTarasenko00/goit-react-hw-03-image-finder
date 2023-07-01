@@ -1,5 +1,7 @@
 import { Component } from 'react';
 import { createPortal } from 'react-dom';
+import PropTypes from 'prop-types';
+
 import css from './Modal.module.css';
 
 const modalRoot = document.getElementById('modal');
@@ -26,10 +28,21 @@ export class Modal extends Component {
   render() {
     return createPortal(
       <div className={css.overlay} onClick={this.onClickOverlay}>
-        <div className={css.modal}>{this.props.children}</div>
-        <img src={this.props.imgModal} alt={this.props.tags} loading="lazy" />
+        <div className={css.modal}>
+          <img
+            src={this.props.imgModal}
+            alt={this.props.modalTags}
+            loading="lazy"
+          />
+        </div>
       </div>,
       modalRoot
     );
   }
 }
+
+Modal.propTypes = {
+  imgModal: PropTypes.string.isRequired,
+  onCloys: PropTypes.func.isRequired,
+  modalTags: PropTypes.string.isRequired,
+};

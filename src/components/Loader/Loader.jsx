@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { ColorRing } from 'react-loader-spinner';
 
 export const Loader = ({ isLoading }) => {
@@ -16,4 +17,7 @@ export const Loader = ({ isLoading }) => {
       )}
     </>
   );
+};
+Loader.propTypes = {
+  isLoading: PropTypes.bool.isRequired,
 };
