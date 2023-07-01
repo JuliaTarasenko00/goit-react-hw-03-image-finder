@@ -4,3 +4,8 @@
   grid-gap: 16px;
   padding-bottom: 24px;
 }
+.title {
+  padding-top: 20%;
+  text-align: center;
+  color: #3f51b5;
+}

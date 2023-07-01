@@ -26,5 +26,5 @@
   background-color: #303f9f;
 }
 .isHidden {
-  visibility: hidden;
+  display: none;
 }
